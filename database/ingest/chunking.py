@@ -6,11 +6,11 @@ import os
 import sys
 from pathlib import Path
 
-_db_dir = Path(__file__).resolve().parents[1]
-if str(_db_dir) not in sys.path:
-    sys.path.insert(0, str(_db_dir))
+_repo_root = Path(__file__).resolve().parents[2]
+if str(_repo_root) not in sys.path:
+    sys.path.insert(0, str(_repo_root))
 
-from env_loader import load_repo_dotenv  # noqa: E402
+from utils.env_loader import load_repo_dotenv  # noqa: E402
 
 load_repo_dotenv()
 

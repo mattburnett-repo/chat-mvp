@@ -1,7 +1,15 @@
 import os
+import sys
+from pathlib import Path
 
-from env_loader import load_repo_dotenv
-from openai import OpenAI
+_repo_root = Path(__file__).resolve().parent.parent
+_database_dir = Path(__file__).resolve().parent
+for _p in (_repo_root, _database_dir):
+    if str(_p) not in sys.path:
+        sys.path.insert(0, str(_p))
+
+from utils.env_loader import load_repo_dotenv #noqa E402
+from openai import OpenAI #noqa E402
 
 load_repo_dotenv()
 

@@ -1,4 +1,4 @@
-"""Load repo-root `.env` (parent of the `database/` directory)."""
+"""Load repo-root `.env` (project root is the parent of the `utils/` directory)."""
 
 from pathlib import Path
 

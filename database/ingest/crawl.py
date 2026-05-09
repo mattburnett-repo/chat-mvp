@@ -32,7 +32,7 @@ if str(_ROOT) not in sys.path:
 from chunking import chunk_text  # noqa: E402
 
 from database.db import get_connection  # noqa: E402
-from database.env_loader import load_repo_dotenv  # noqa: E402
+from utils.env_loader import load_repo_dotenv  # noqa: E402
 from database.sql_queries import (  # noqa: E402
     DELETE_DOCUMENTS_FOR_SOURCE_URL,
     INSERT_DOCUMENT_CHUNK,
