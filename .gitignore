@@ -69,6 +69,7 @@ ipython_config.py
 
 # pyenv
 .python-version
+pyrightconfig.json
 
 # pdm
 .pdm.toml

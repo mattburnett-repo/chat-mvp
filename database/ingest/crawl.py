@@ -189,7 +189,7 @@ def main() -> None:
     print(f"Done. Sources stored (chunked): {pages_stored}")
     print(
         "Next step: compute embeddings — from repo root: "
-        "cd database && python embed.py (use your venv's python if needed)."
+        "cd database && python3.13.12 embed.py (or `.venv/bin/python` from a 3.13.12 venv)."
     )
 
 
