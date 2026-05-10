@@ -129,6 +129,3 @@ cython_debug/
 # OS
 .DS_Store
 Thumbs.db
-
-# general ignore files
-docs/
