@@ -30,17 +30,20 @@ def default_top_k() -> int:
     return int(os.environ.get("QUERY_TOP_K", "5"))
 
 
-def query_api(question: str, top_k: int) -> tuple[str, list[dict]]:
+def query_api(
+    question: str, top_k: int, session_id: str | None
+) -> tuple[str, list[dict], str]:
+    body: dict = {"query": question, "top_k": top_k}
+    if session_id:
+        body["session_id"] = session_id
     with httpx.Client(timeout=120.0) as client:
-        r = client.post(
-            f"{api_base()}/query",
-            json={"query": question, "top_k": top_k},
-        )
+        r = client.post(f"{api_base()}/query", json=body)
     r.raise_for_status()
     data = r.json()
     answer = data.get("answer", "")
     sources = data.get("sources") or []
-    return answer, sources
+    sid = data.get("session_id") or ""
+    return answer, sources, sid
 
 
 st.set_page_config(page_title="Chat MVP", page_icon="💬", layout="centered")
@@ -48,6 +51,10 @@ st.title("Chat MVP")
 
 with st.sidebar:
     st.caption("RAG chat using the FastAPI backend and ingested documents.")
+    if st.button("New chat"):
+        st.session_state.messages = []
+        st.session_state.conversation_id = None
+        st.rerun()
     top_k = st.number_input(
         "Chunks to retrieve (top_k)",
         min_value=1,
@@ -59,6 +66,8 @@ with st.sidebar:
 
 if "messages" not in st.session_state:
     st.session_state.messages = []
+if "conversation_id" not in st.session_state:
+    st.session_state.conversation_id = None
 
 for msg in st.session_state.messages:
     with st.chat_message(msg["role"]):
@@ -77,7 +86,11 @@ if prompt := st.chat_input("Ask a question…"):
     with st.chat_message("assistant"):
         try:
             with st.spinner("Querying…"):
-                answer, sources = query_api(prompt, int(top_k))
+                answer, sources, sid = query_api(
+                    prompt, int(top_k), st.session_state.conversation_id
+                )
+                if sid:
+                    st.session_state.conversation_id = sid
             st.markdown(answer)
             if sources:
                 with st.expander("Sources"):

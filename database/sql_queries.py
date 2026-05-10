@@ -24,3 +24,26 @@ SELECT_DOCUMENTS_BY_VECTOR_SIMILARITY = """
     ORDER BY embedding <-> %s::vector
     LIMIT %s
 """
+
+INSERT_CONVERSATION_IF_ABSENT = """
+    INSERT INTO conversations (session_id)
+    VALUES (%s)
+    ON CONFLICT (session_id) DO NOTHING
+"""
+
+SELECT_CHAT_MESSAGES_FOR_SESSION = """
+    SELECT message
+    FROM chat_messages
+    WHERE session_id = %s
+    ORDER BY created_at ASC, id ASC
+"""
+
+INSERT_CHAT_MESSAGE = """
+    INSERT INTO chat_messages (session_id, message)
+    VALUES (%s, %s)
+"""
+
+DELETE_CHAT_MESSAGES_FOR_SESSION = """
+    DELETE FROM chat_messages
+    WHERE session_id = %s
+"""
