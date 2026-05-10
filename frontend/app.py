@@ -47,7 +47,7 @@ def query_api(
 
 
 st.set_page_config(page_title="Chat MVP", page_icon="💬", layout="centered")
-st.title("Chat MVP")
+st.title("CIB Mango Tree | Chat MVP")
 
 with st.sidebar:
     st.caption("RAG chat using the FastAPI backend and ingested documents.")
