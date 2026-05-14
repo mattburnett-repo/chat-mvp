@@ -1,5 +1,6 @@
 import os
 import sys
+import time
 import uuid
 from pathlib import Path
 
@@ -8,8 +9,9 @@ from langchain_core.messages import AIMessage, HumanMessage
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain_core.runnables.history import RunnableWithMessageHistory
-from langchain_openai import ChatOpenAI, OpenAIEmbeddings
-from pydantic import BaseModel, Field
+from langchain_huggingface import ChatHuggingFace, HuggingFaceEndpoint
+from langchain_openai import OpenAIEmbeddings
+from pydantic import BaseModel, Field, SecretStr
 
 _backend_dir = Path(__file__).resolve().parent
 _repo_root = _backend_dir.parent
@@ -42,7 +44,16 @@ def _ensure_conversation_row(session_id: str) -> None:
         conn.close()
 
 
-_llm = ChatOpenAI(model=os.environ["PRIMARY_LLM_MODEL"], temperature=0)
+_llm = ChatHuggingFace(
+    llm=HuggingFaceEndpoint(
+        model=os.environ["PRIMARY_LLM_MODEL"],
+        task="text-generation",
+        provider=os.environ["PRIMARY_LLM_PROVIDER"],
+        temperature=0,
+        do_sample=False,
+        huggingfacehub_api_token=os.environ["PRIMARY_LLM_KEY"],
+    )
+)
 
 _RAG_PROMPT = ChatPromptTemplate.from_messages(
     [
@@ -101,9 +112,12 @@ def _effective_session_id(raw: str | None) -> str:
 def query(req: QueryRequest):
     if not os.environ.get("PRIMARY_LLM_KEY"):
         raise HTTPException(status_code=500, detail="Missing PRIMARY_LLM_KEY")
-    emb_model = os.environ.get("OPENAI_EMBEDDING_MODEL")
+    emb_model = os.environ.get("EMBEDDING_MODEL")
     if not emb_model:
-        raise HTTPException(status_code=500, detail="Missing OPENAI_EMBEDDING_MODEL")
+        raise HTTPException(status_code=500, detail="Missing EMBEDDING_MODEL")
+    emb_key = os.environ.get("EMBEDDING_MODEL_KEY")
+    if not emb_key:
+        raise HTTPException(status_code=500, detail="Missing EMBEDDING_MODEL_KEY")
 
     session_id = _effective_session_id(req.session_id)
     try:
@@ -111,7 +125,7 @@ def query(req: QueryRequest):
     except Exception as e:
         raise HTTPException(status_code=502, detail=f"Database error: {e}") from e
 
-    embeddings = OpenAIEmbeddings(model=emb_model)
+    embeddings = OpenAIEmbeddings(model=emb_model, api_key=SecretStr(emb_key))
     try:
         q_vec = embeddings.embed_query(req.query)
     except Exception as e:
@@ -143,12 +157,17 @@ def query(req: QueryRequest):
         )
     context = "\n\n---\n\n".join(context_blocks)
 
-    try:
-        answer = _chain_with_history.invoke(
-            {"context": context, "question": req.query},
-            config={"configurable": {"session_id": session_id}},
-        )
-    except Exception as e:
-        raise HTTPException(status_code=502, detail=f"LLM failed: {e}") from e
+    for attempt in range(4):
+        try:
+            answer = _chain_with_history.invoke(
+                {"context": context, "question": req.query},
+                config={"configurable": {"session_id": session_id}},
+            )
+            return QueryResponse(answer=answer, sources=sources, session_id=session_id)
+        except Exception as e:
+            if attempt < 3 and "429" in str(e).lower():
+                time.sleep(2)
+                continue
+            raise HTTPException(status_code=502, detail=f"LLM failed: {e}") from e
 
-    return QueryResponse(answer=answer, sources=sources, session_id=session_id)
+    raise HTTPException(status_code=502, detail="LLM failed")

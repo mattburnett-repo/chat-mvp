@@ -7,7 +7,7 @@ from sql_queries import (
     UPDATE_DOCUMENT_EMBEDDING,
 )
 
-client = OpenAI(api_key=os.environ["PRIMARY_LLM_KEY"])
+client = OpenAI(api_key=os.environ["EMBEDDING_MODEL_KEY"])
 
 # 1. fetch rows without embeddings
 conn = get_connection()
@@ -24,7 +24,7 @@ for doc_id, content in rows:
     print(f"Embedding id={doc_id}")
 
     response = client.embeddings.create(
-        model=os.environ["OPENAI_EMBEDDING_MODEL"],
+        model=os.environ["EMBEDDING_MODEL"],
         input=content,
     )
 

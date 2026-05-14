@@ -1,5 +1,6 @@
 # Streamlit Community Cloud: dependency search starts at the entrypoint dir, so this
 # file is used before repo-root requirements.txt. UI only (HTTP to FastAPI backend).
-streamlit==1.45.0
+# Versions match repo-root requirements.txt.
+streamlit==1.55.0
 httpx==0.28.1
 python-dotenv==1.0.1

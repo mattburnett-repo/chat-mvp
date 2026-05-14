@@ -16,12 +16,12 @@ load_repo_dotenv()
 from db import get_connection  # noqa: E402
 from sql_queries import SELECT_DOCUMENTS_BY_VECTOR_SIMILARITY  # noqa: E402
 
-client = OpenAI(api_key=os.environ["PRIMARY_LLM_KEY"])
+client = OpenAI(api_key=os.environ["EMBEDDING_MODEL_KEY"])
 
 
 def embed(text: str):
     resp = client.embeddings.create(
-        model=os.environ["OPENAI_EMBEDDING_MODEL"],
+        model=os.environ["EMBEDDING_MODEL"],
         input=text,
     )
     return resp.data[0].embedding
