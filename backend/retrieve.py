@@ -1,4 +1,4 @@
-"""Vector search against the shared `database` layer."""
+"""Vector search against the shared `corpus` layer."""
 
 import sys
 from pathlib import Path
@@ -7,8 +7,8 @@ _repo_root = Path(__file__).resolve().parent.parent
 if str(_repo_root) not in sys.path:
     sys.path.insert(0, str(_repo_root))
 
-from database.db import get_connection  # noqa: E402
-from database.sql_queries import SELECT_DOCUMENTS_BY_VECTOR_SIMILARITY  # noqa: E402
+from corpus.db import get_connection  # noqa: E402
+from corpus.sql_queries import SELECT_DOCUMENTS_BY_VECTOR_SIMILARITY  # noqa: E402
 from utils.env_loader import load_repo_dotenv  # noqa: E402
 
 load_repo_dotenv()

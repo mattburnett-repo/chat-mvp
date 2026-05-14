@@ -42,7 +42,7 @@ sequenceDiagram
 
 ```mermaid
 flowchart TD
-  A[POST /query] --> B{OPENAI_API_KEY and embedding model set?}
+  A[POST /query] --> B{PRIMARY_LLM_KEY and embedding model set?}
   B -->|no| E500[HTTP 500]
   B -->|yes| C[Resolve session_id UUID or client id]
   C --> D[Ensure conversations row]

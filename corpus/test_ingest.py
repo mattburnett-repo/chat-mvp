@@ -3,8 +3,8 @@ import sys
 from pathlib import Path
 
 _repo_root = Path(__file__).resolve().parent.parent
-_database_dir = Path(__file__).resolve().parent
-for _p in (_repo_root, _database_dir):
+_corpus_dir = Path(__file__).resolve().parent
+for _p in (_repo_root, _corpus_dir):
     if str(_p) not in sys.path:
         sys.path.insert(0, str(_p))
 
@@ -16,12 +16,12 @@ load_repo_dotenv()
 from db import get_connection  # noqa: E402
 from sql_queries import SELECT_DOCUMENTS_BY_VECTOR_SIMILARITY  # noqa: E402
 
-client = OpenAI(api_key=os.environ["OPENAI_API_KEY"])
+client = OpenAI(api_key=os.environ["EMBEDDING_MODEL_KEY"])
 
 
 def embed(text: str):
     resp = client.embeddings.create(
-        model=os.environ["OPENAI_EMBEDDING_MODEL"],
+        model=os.environ["EMBEDDING_MODEL"],
         input=text,
     )
     return resp.data[0].embedding

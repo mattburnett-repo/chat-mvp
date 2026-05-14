@@ -34,7 +34,7 @@ exposes a Streamlit chat UI.
 ```
 backend/      FastAPI app exposing /health and /query (RAG over pgvector)
 frontend/     Streamlit chat UI that calls the backend
-database/     DB connection, schema reference, ingestion, embedding, chat history
+corpus/       DB connection, schema reference, ingestion, embedding, chat history
   ingest/     GitHub README + seed-URL crawler and chunker
 utils/        Shared helpers (env loading)
 docs/         Project planning documents
@@ -63,20 +63,20 @@ docs/         Project planning documents
    cp .env.sample .env
    ```
    Required keys include `PGHOST`, `PGDATABASE`, `PGUSER`, `PGPASSWORD`,
-   `OPENAI_API_KEY`, `OPENAI_CHAT_MODEL`, `OPENAI_EMBEDDING_MODEL`, and
+   `PRIMARY_LLM_KEY`, `PRIMARY_LLM_MODEL`, `EMBEDDING_MODEL`, and
    `QUERY_TOP_K`. Crawl/chunk tuning vars are also listed in `.env.sample`.
 3. Create the database tables. Reference DDL for `documents`,
-   `chat_messages`, and `conversations` lives in `database/schema.py`; copy
+   `chat_messages`, and `conversations` lives in `corpus/schema.py`; copy
    it into `psql` or pgAdmin.
 
 ## Ingest and embed sources
 
 Sources are the project's GitHub README (plus dev files linked from it) and
-the explicit URLs in `database/ingest/sources.py`. From the repo root:
+the explicit URLs in `corpus/ingest/sources.py`. From the repo root:
 
 ```bash
-.venv/bin/python database/ingest/crawl.py
-cd database && ../.venv/bin/python embed.py
+.venv/bin/python corpus/ingest/crawl.py
+cd corpus && ../.venv/bin/python embed.py
 ```
 
 `crawl.py` fetches each source once, extracts text, chunks it, and writes

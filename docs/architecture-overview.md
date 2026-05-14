@@ -10,7 +10,7 @@ flowchart LR
     UI[Streamlit frontend/app.py]
   end
   subgraph Backend
-    API[FastAPI backend/main.py]
+    API[FastAPI corpus/main.py]
     RET[retrieve.search_by_embedding]
   end
   subgraph Data
@@ -32,11 +32,11 @@ flowchart TB
   subgraph frontend
     APP[app.py]
   end
-  subgraph backend
+  subgraph corpus
     MAIN[main.py]
     RET[retrieve.py]
   end
-  subgraph database
+  subgraph corpus
     DB[db.py]
     SCH[schema.py DDL reference]
     SQL[sql_queries.py]
@@ -77,12 +77,12 @@ flowchart TB
 ```mermaid
 flowchart LR
   subgraph Dev
-    U[uvicorn backend.main:app]
+    U[uvicorn corpus.main:app]
     S[streamlit run frontend/app.py]
   end
   subgraph Batch
-    C[python database/ingest/crawl.py]
-    E[cd database && python embed.py]
+    C[python corpus/ingest/crawl.py]
+    E[cd corpus && python embed.py]
   end
   S -->|CHAT_MVP_API_BASE_URL| U
   C --> PG[(PostgreSQL)]
@@ -90,4 +90,4 @@ flowchart LR
   U --> PG
 ```
 
-`embed.py` is intended to be run from the `database/` working directory (its imports use `db` and `sql_queries` as top-level modules).
+`embed.py` is intended to be run from the `corpus/` working directory (its imports use `db` and `sql_queries` as top-level modules).
