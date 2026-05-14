@@ -1,6 +1,6 @@
 # Database schema (Mermaid ER)
 
-Tables and relationships as defined in `database/schema.py` (reference DDL) and used by `database/sql_queries.py` and the app.
+Tables and relationships as defined in `corpus/schema.py` (reference DDL) and used by `corpus/sql_queries.py` and the app.
 
 ## Entity relationship
 

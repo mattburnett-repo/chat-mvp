@@ -3,8 +3,8 @@ import sys
 from pathlib import Path
 
 _repo_root = Path(__file__).resolve().parent.parent
-_database_dir = Path(__file__).resolve().parent
-for _p in (_repo_root, _database_dir):
+_corpus_dir = Path(__file__).resolve().parent
+for _p in (_repo_root, _corpus_dir):
     if str(_p) not in sys.path:
         sys.path.insert(0, str(_p))
 

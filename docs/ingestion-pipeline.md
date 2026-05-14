@@ -1,6 +1,6 @@
 # Ingestion pipeline (Mermaid)
 
-Offline jobs: `database/ingest/crawl.py` writes chunked rows to `documents`; `database/embed.py` fills `embedding` for rows where it is null.
+Offline jobs: `corpus/ingest/crawl.py` writes chunked rows to `documents`; `corpus/embed.py` fills `embedding` for rows where it is null.
 
 ## Crawl pipeline
 
@@ -38,7 +38,7 @@ flowchart LR
   R --> RM --> DL --> HOP --> FETCH
 ```
 
-Constants `GITHUB_OWNER` / `GITHUB_REPO` and `SEED_URLS` live in `database/ingest/sources.py`.
+Constants `GITHUB_OWNER` / `GITHUB_REPO` and `SEED_URLS` live in `corpus/ingest/sources.py`.
 
 ## Chunking
 
@@ -53,7 +53,7 @@ flowchart LR
 
 ```mermaid
 flowchart TD
-  E[embed.py from database/ cwd] --> SEL[SELECT id, content WHERE embedding IS NULL]
+  E[embed.py from corpus/ cwd] --> SEL[SELECT id, content WHERE embedding IS NULL]
   SEL --> LOOP{For each row}
   LOOP --> OAI[OpenAI embeddings.create]
   OAI --> UPD[UPDATE documents SET embedding]

@@ -20,9 +20,9 @@ from utils.env_loader import load_repo_dotenv  # noqa: E402
 
 load_repo_dotenv()
 
-from database.db import get_connection  # noqa: E402
-from database.postgres_chat_message_history import PostgresChatMessageHistory  # noqa: E402
-from database.sql_queries import INSERT_CONVERSATION_IF_ABSENT  # noqa: E402
+from corpus.db import get_connection  # noqa: E402
+from corpus.postgres_chat_message_history import PostgresChatMessageHistory  # noqa: E402
+from corpus.sql_queries import INSERT_CONVERSATION_IF_ABSENT  # noqa: E402
 from .retrieve import search_by_embedding  # noqa: E402
 
 

@@ -4,7 +4,7 @@ Ingest: (1) GitHub README + dev files linked from README (API + raw),
 
 Each source becomes one or more `documents` rows. Re-run replaces chunks per URL.
 
-Run from repo root:  .venv/bin/python database/ingest/crawl.py
+Run from repo root:  .venv/bin/python corpus/ingest/crawl.py
 
 Requires: database env vars, `documents` with unique (source_url, chunk_index).
 
@@ -31,9 +31,9 @@ if str(_ROOT) not in sys.path:
 
 from chunking import chunk_text  # noqa: E402
 
-from database.db import get_connection  # noqa: E402
+from corpus.db import get_connection  # noqa: E402
 from utils.env_loader import load_repo_dotenv  # noqa: E402
-from database.sql_queries import (  # noqa: E402
+from corpus.sql_queries import (  # noqa: E402
     DELETE_DOCUMENTS_FOR_SOURCE_URL,
     INSERT_DOCUMENT_CHUNK,
 )
@@ -189,7 +189,7 @@ def main() -> None:
     print(f"Done. Sources stored (chunked): {pages_stored}")
     print(
         "Next step: compute embeddings — from repo root: "
-        "cd database && python3.13.12 embed.py (or `.venv/bin/python` from a 3.13.12 venv)."
+        "cd corpus && python3.13.12 embed.py (or `.venv/bin/python` from a 3.13.12 venv)."
     )
 
 

@@ -19,8 +19,8 @@ _repo_root = Path(__file__).resolve().parent.parent
 if str(_repo_root) not in sys.path:
     sys.path.insert(0, str(_repo_root))
 
-from database.db import get_connection  # noqa: E402
-from database.sql_queries import (  # noqa: E402
+from corpus.db import get_connection  # noqa: E402
+from corpus.sql_queries import (  # noqa: E402
     DELETE_CHAT_MESSAGES_FOR_SESSION,
     INSERT_CHAT_MESSAGE,
     SELECT_CHAT_MESSAGES_FOR_SESSION,

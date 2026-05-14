@@ -1,5 +1,5 @@
 # Same pins as requirements.txt minus Streamlit stack (avoids packaging<25 vs packaging==26.2 on Render).
-# Includes crawl/ingest deps for running database/ingest/* from the same environment as the API.
+# Includes crawl/ingest deps for running corpus/ingest/* from the same environment as the API.
 annotated-doc==0.0.4
 annotated-types==0.7.0
 anyio==4.13.0
