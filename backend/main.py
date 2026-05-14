@@ -42,17 +42,13 @@ def _ensure_conversation_row(session_id: str) -> None:
         conn.close()
 
 
-_llm = ChatOpenAI(model=os.environ["OPENAI_CHAT_MODEL"], temperature=0)
+_llm = ChatOpenAI(model=os.environ["PRIMARY_LLM_MODEL"], temperature=0)
 
 _RAG_PROMPT = ChatPromptTemplate.from_messages(
     [
         (
             "system",
-            "You are a helpful assistant. Answer using only the provided context. "
-            "If the context is insufficient, say so briefly. "
-            "Use conversation history only to interpret follow-up questions (e.g. what \"it\" refers to); "
-            "do not treat the history as factual sources. "
-            "When relevant, mention which source URLs in the context support your answer.",
+            os.environ["PRIMARY_SYSTEM_PROMPT"],
         ),
         MessagesPlaceholder("history"),
         (
@@ -103,8 +99,8 @@ def _effective_session_id(raw: str | None) -> str:
 
 @app.post("/query", response_model=QueryResponse)
 def query(req: QueryRequest):
-    if not os.environ.get("OPENAI_API_KEY"):
-        raise HTTPException(status_code=500, detail="Missing OPENAI_API_KEY")
+    if not os.environ.get("PRIMARY_LLM_KEY"):
+        raise HTTPException(status_code=500, detail="Missing PRIMARY_LLM_KEY")
     emb_model = os.environ.get("OPENAI_EMBEDDING_MODEL")
     if not emb_model:
         raise HTTPException(status_code=500, detail="Missing OPENAI_EMBEDDING_MODEL")

@@ -63,7 +63,7 @@ docs/         Project planning documents
    cp .env.sample .env
    ```
    Required keys include `PGHOST`, `PGDATABASE`, `PGUSER`, `PGPASSWORD`,
-   `OPENAI_API_KEY`, `OPENAI_CHAT_MODEL`, `OPENAI_EMBEDDING_MODEL`, and
+   `PRIMARY_LLM_KEY`, `PRIMARY_LLM_MODEL`, `OPENAI_EMBEDDING_MODEL`, and
    `QUERY_TOP_K`. Crawl/chunk tuning vars are also listed in `.env.sample`.
 3. Create the database tables. Reference DDL for `documents`,
    `chat_messages`, and `conversations` lives in `corpus/schema.py`; copy

@@ -7,7 +7,7 @@ from sql_queries import (
     UPDATE_DOCUMENT_EMBEDDING,
 )
 
-client = OpenAI(api_key=os.environ["OPENAI_API_KEY"])
+client = OpenAI(api_key=os.environ["PRIMARY_LLM_KEY"])
 
 # 1. fetch rows without embeddings
 conn = get_connection()

@@ -67,4 +67,4 @@ flowchart TD
 |------|----------------------------------|
 | Crawl | `CRAWL_MAX_PAGES`, `CRAWL_REQUEST_TIMEOUT_S`, `CRAWL_DELAY_S`, `CRAWL_USER_AGENT` |
 | Chunks | `CHUNK_MAX_CHARS`, `CHUNK_OVERLAP_CHARS` |
-| DB / OpenAI | Same as app: `PG*`, `OPENAI_API_KEY`, `OPENAI_EMBEDDING_MODEL` |
+| DB / OpenAI | Same as app: `PG*`, `PRIMARY_LLM_KEY`, `OPENAI_EMBEDDING_MODEL` |
