@@ -25,11 +25,12 @@ load_repo_dotenv()
 from corpus.db import get_connection  # noqa: E402
 from corpus.postgres_chat_message_history import PostgresChatMessageHistory  # noqa: E402
 from corpus.sql_queries import INSERT_CONVERSATION_IF_ABSENT  # noqa: E402
+from .prompts import PRIMARY_SYSTEM_PROMPT  # noqa: E402
 from .retrieve import search_by_embedding  # noqa: E402
 
 
 def get_session_history(session_id: str) -> PostgresChatMessageHistory:
-    max_toks = int(os.environ.get("CHAT_HISTORY_MAX_TOKENS", "3000"))
+    max_toks = int(os.environ["CHAT_HISTORY_MAX_TOKENS"])
     return PostgresChatMessageHistory(session_id=session_id, max_history_tokens=max_toks)
 
 
@@ -59,7 +60,7 @@ _RAG_PROMPT = ChatPromptTemplate.from_messages(
     [
         (
             "system",
-            os.environ["PRIMARY_SYSTEM_PROMPT"],
+            PRIMARY_SYSTEM_PROMPT,
         ),
         MessagesPlaceholder("history"),
         (
