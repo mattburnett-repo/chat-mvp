@@ -10,8 +10,7 @@ from langchain_core.output_parsers import StrOutputParser
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain_core.runnables.history import RunnableWithMessageHistory
 from langchain_huggingface import ChatHuggingFace, HuggingFaceEndpoint
-from langchain_openai import OpenAIEmbeddings
-from pydantic import BaseModel, Field, SecretStr
+from pydantic import BaseModel, Field
 
 _backend_dir = Path(__file__).resolve().parent
 _repo_root = _backend_dir.parent
@@ -23,6 +22,7 @@ from utils.env_loader import load_repo_dotenv  # noqa: E402
 load_repo_dotenv()
 
 from corpus.db import get_connection  # noqa: E402
+from corpus.embeddings import embed_query  # noqa: E402
 from corpus.postgres_chat_message_history import PostgresChatMessageHistory  # noqa: E402
 from corpus.sql_queries import INSERT_CONVERSATION_IF_ABSENT  # noqa: E402
 from .prompts import PRIMARY_SYSTEM_PROMPT  # noqa: E402
@@ -113,22 +113,14 @@ def _effective_session_id(raw: str | None) -> str:
 def query(req: QueryRequest):
     if not os.environ.get("PRIMARY_LLM_KEY"):
         raise HTTPException(status_code=500, detail="Missing PRIMARY_LLM_KEY")
-    emb_model = os.environ.get("EMBEDDING_MODEL")
-    if not emb_model:
-        raise HTTPException(status_code=500, detail="Missing EMBEDDING_MODEL")
-    emb_key = os.environ.get("EMBEDDING_MODEL_KEY")
-    if not emb_key:
-        raise HTTPException(status_code=500, detail="Missing EMBEDDING_MODEL_KEY")
-
     session_id = _effective_session_id(req.session_id)
     try:
         _ensure_conversation_row(session_id)
     except Exception as e:
         raise HTTPException(status_code=502, detail=f"Database error: {e}") from e
 
-    embeddings = OpenAIEmbeddings(model=emb_model, api_key=SecretStr(emb_key))
     try:
-        q_vec = embeddings.embed_query(req.query)
+        q_vec = embed_query(req.query)
     except Exception as e:
         raise HTTPException(status_code=502, detail=f"Embedding failed: {e}") from e
 

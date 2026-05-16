@@ -9,7 +9,7 @@
   <a href="https://www.uvicorn.org/"><img alt="Uvicorn" src="https://img.shields.io/badge/Uvicorn-0.46-499848?logo=Gunicorn"></a>
   <a href="https://streamlit.io/"><img alt="Streamlit" src="https://img.shields.io/badge/Streamlit-1.45-FF4B4B?logo=Streamlit"></a>
   <a href="https://python.langchain.com/"><img alt="LangChain" src="https://img.shields.io/badge/LangChain-1.3-1C3C3C?logo=LangChain"></a>
-  <a href="https://platform.openai.com/"><img alt="OpenAI" src="https://img.shields.io/badge/OpenAI-API-412991?logo=OpenAI"></a>
+  <a href="https://huggingface.co/"><img alt="Hugging Face" src="https://img.shields.io/badge/Hugging%20Face-Inference-FFD21E?logo=HuggingFace"></a>
   <a href="https://docs.pydantic.dev/"><img alt="Pydantic" src="https://img.shields.io/badge/Pydantic-2.13-E92063?logo=Pydantic"></a>
 </p>
 
@@ -23,8 +23,8 @@ exposes a Streamlit chat UI.
 
 - Python 3.13.12
 - PostgreSQL + [`pgvector`](https://github.com/pgvector/pgvector) extension
-- LangChain (`langchain-core`, `langchain-openai`)
-- OpenAI API (chat + embeddings)
+- LangChain (`langchain-core`, `langchain-huggingface`)
+- Hugging Face Inference API (chat + embeddings)
 - FastAPI + Uvicorn (backend)
 - Streamlit (frontend)
 - Trafilatura + BeautifulSoup (HTML extraction)
@@ -48,7 +48,7 @@ docs/         Project planning documents
   ```sql
   CREATE EXTENSION IF NOT EXISTS vector;
   ```
-- An OpenAI API key
+- A Hugging Face API token (`PRIMARY_LLM_KEY`) for chat and embeddings
 
 ## Setup
 
@@ -80,8 +80,9 @@ cd corpus && ../.venv/bin/python embed.py
 ```
 
 `crawl.py` fetches each source once, extracts text, chunks it, and writes
-rows to `documents`. `embed.py` fills in missing embeddings via the OpenAI
-embeddings API. Re-running `crawl.py` replaces chunks per source URL.
+rows to `documents`. `embed.py` fills in missing embeddings with the
+Hugging Face model in `EMBEDDING_MODEL` (default `BAAI/bge-base-en-v1.5`,
+768-dimensional vectors). Re-running `crawl.py` replaces chunks per source URL.
 
 ## Run the app
 

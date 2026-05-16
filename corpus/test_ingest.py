@@ -1,4 +1,3 @@
-import os
 import sys
 from pathlib import Path
 
@@ -8,23 +7,13 @@ for _p in (_repo_root, _corpus_dir):
     if str(_p) not in sys.path:
         sys.path.insert(0, str(_p))
 
-from utils.env_loader import load_repo_dotenv #noqa E402
-from openai import OpenAI #noqa E402
+from utils.env_loader import load_repo_dotenv  # noqa: E402
 
 load_repo_dotenv()
 
 from db import get_connection  # noqa: E402
+from embeddings import embed_query  # noqa: E402
 from sql_queries import SELECT_DOCUMENTS_BY_VECTOR_SIMILARITY  # noqa: E402
-
-client = OpenAI(api_key=os.environ["EMBEDDING_MODEL_KEY"])
-
-
-def embed(text: str):
-    resp = client.embeddings.create(
-        model=os.environ["EMBEDDING_MODEL"],
-        input=text,
-    )
-    return resp.data[0].embedding
 
 
 def _to_pgvector_literal(vec: list[float]) -> str:
@@ -33,7 +22,7 @@ def _to_pgvector_literal(vec: list[float]) -> str:
 
 
 def search(query, top_k=5):
-    q_emb = embed(query)
+    q_emb = embed_query(query)
 
     conn = get_connection()
     cur = conn.cursor()
