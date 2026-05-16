@@ -55,8 +55,8 @@ flowchart LR
 flowchart TD
   E[embed.py from corpus/ cwd] --> SEL[SELECT id, content WHERE embedding IS NULL]
   SEL --> LOOP{For each row}
-  LOOP --> OAI[OpenAI embeddings.create]
-  OAI --> UPD[UPDATE documents SET embedding]
+  LOOP --> HF[HF Inference feature_extraction]
+  HF --> UPD[UPDATE documents SET embedding]
   UPD --> LOOP
   LOOP --> DONE[commit close]
 ```
@@ -67,4 +67,4 @@ flowchart TD
 |------|----------------------------------|
 | Crawl | `CRAWL_MAX_PAGES`, `CRAWL_REQUEST_TIMEOUT_S`, `CRAWL_DELAY_S`, `CRAWL_USER_AGENT` |
 | Chunks | `CHUNK_MAX_CHARS`, `CHUNK_OVERLAP_CHARS` |
-| DB / OpenAI | Same as app: `PG*`, `PRIMARY_LLM_KEY`, `EMBEDDING_MODEL` |
+| DB / embeddings | `PG*`, `PRIMARY_LLM_KEY`, `EMBEDDING_MODEL` |

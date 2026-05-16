@@ -1,6 +1,6 @@
 # Architecture overview (Mermaid)
 
-High-level layout of the Chat MVP repo: Streamlit UI, FastAPI backend, PostgreSQL with pgvector, OpenAI APIs, and offline ingestion scripts.
+High-level layout of the Chat MVP repo: Streamlit UI, FastAPI backend, PostgreSQL with pgvector, Hugging Face (chat + local embeddings), and offline ingestion scripts.
 
 ## System context
 
@@ -17,12 +17,12 @@ flowchart LR
     PG[(PostgreSQL + pgvector)]
   end
   subgraph External
-    OAI[OpenAI API]
+    HF[Hugging Face Inference API]
   end
   UI -->|HTTP POST /query| API
   API --> RET
   RET --> PG
-  API -->|embed_query + chat| OAI
+  API -->|embed_query + chat| HF
 ```
 
 ## Repository modules

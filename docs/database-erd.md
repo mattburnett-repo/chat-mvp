@@ -44,4 +44,4 @@ flowchart TB
   CV --> PK["PK session_id"]
 ```
 
-Vector dimension in schema reference: `vector(1536)` (OpenAI embedding size for the configured model).
+Vector dimension in schema reference: `vector(768)` for default `BAAI/bge-base-en-v1.5`.

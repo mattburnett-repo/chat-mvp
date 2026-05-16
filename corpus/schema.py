@@ -49,13 +49,13 @@ CREATE INDEX IF NOT EXISTS chat_messages_session_created_idx
 SCHEMA_DOCUMENTS_SQL = r"""
 -- Table: public.documents
 
--- DROP TABLE IF EXISTS public.documents;
+-- DROP TABLE IF EXISTS public.documents CASCADE;
 
 CREATE TABLE IF NOT EXISTS public.documents
 (
-    id integer NOT NULL DEFAULT nextval('documents_id_seq'::regclass),
+    id serial NOT NULL,
     content text COLLATE pg_catalog."default",
-    embedding vector(1536),
+    embedding vector(768),
     source_url text COLLATE pg_catalog."default" NOT NULL,
     chunk_index integer NOT NULL DEFAULT 0,
     title text COLLATE pg_catalog."default",

@@ -8,19 +8,19 @@ End-to-end behavior of `POST /query` in `backend/main.py`, the vector retrieval 
 sequenceDiagram
   participant ST as Streamlit app.py
   participant API as FastAPI /query
-  participant OAI as OpenAI embeddings + chat
+  participant HF as Hugging Face embeddings + chat
   participant PG as PostgreSQL
   participant H as PostgresChatMessageHistory
 
   ST->>API: POST JSON query, top_k, session_id?
   API->>PG: INSERT conversation if absent
-  API->>OAI: embed_query(query)
-  OAI-->>API: query vector
+  API->>HF: embed_query with BGE prefix
+  HF-->>API: query vector
   API->>PG: SELECT top_k by embedding distance
   PG-->>API: rows source_url, chunk_index, content
   API->>H: RunnableWithMessageHistory loads trimmed history
-  API->>OAI: ChatOpenAI with context + question + history
-  OAI-->>API: answer string
+  API->>HF: ChatHuggingFace with context + question + history
+  HF-->>API: answer string
   API-->>ST: answer, sources[], session_id
 ```
 
@@ -42,7 +42,7 @@ sequenceDiagram
 
 ```mermaid
 flowchart TD
-  A[POST /query] --> B{PRIMARY_LLM_KEY and embedding model set?}
+  A[POST /query] --> B{PRIMARY_LLM_KEY set?}
   B -->|no| E500[HTTP 500]
   B -->|yes| C[Resolve session_id UUID or client id]
   C --> D[Ensure conversations row]
