@@ -9,9 +9,8 @@ import os
 from functools import lru_cache
 from typing import Any
 
-from huggingface_hub import InferenceClient
-
 from backend.prompts import BGE_QUERY_PREFIX
+from huggingface_hub import InferenceClient
 
 
 def embedding_model_name() -> str:
@@ -24,7 +23,9 @@ def embedding_model_name() -> str:
 def _hf_token() -> str:
     token = os.environ.get("PRIMARY_LLM_KEY", "").strip()
     if not token:
-        raise ValueError("Missing PRIMARY_LLM_KEY (required for Hugging Face Inference API)")
+        raise ValueError(
+            "Missing PRIMARY_LLM_KEY (required for Hugging Face Inference API)"
+        )
     return token
 
 
@@ -39,7 +40,7 @@ def _mean_pool(features: Any) -> list[float]:
         features = features.tolist()
     if not features:
         return []
-    if isinstance(features[0], (int, float)):
+    if isinstance(features[0], int | float):
         vec = [float(x) for x in features]
     else:
         rows = [[float(x) for x in row] for row in features]

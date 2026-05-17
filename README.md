@@ -57,6 +57,7 @@ docs/         Project planning documents
    python3.13 -m venv .venv
    source .venv/bin/activate
    pip install -r requirements.txt
+   pip install -e .
    ```
 2. Copy `.env.sample` to `.env` and fill in values:
    ```bash
@@ -75,8 +76,9 @@ Sources are the project's GitHub README (plus dev files linked from it) and
 the explicit URLs in `corpus/ingest/sources.py`. From the repo root:
 
 ```bash
-.venv/bin/python corpus/ingest/crawl.py
-cd corpus && ../.venv/bin/python embed.py
+.venv/bin/pip install -e .
+.venv/bin/python -m corpus.ingest.crawl
+.venv/bin/python -m corpus.embed
 ```
 
 `crawl.py` fetches each source once, extracts text, chunks it, and writes

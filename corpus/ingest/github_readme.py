@@ -8,7 +8,7 @@ Does not crawl the GitHub website — only API + raw.githubusercontent.com.
 from __future__ import annotations
 
 import re
-from typing import Iterator
+from collections.abc import Iterator
 from urllib.parse import unquote, urlparse
 
 import httpx
@@ -160,8 +160,7 @@ def iter_github_readme_docs(
         seen.add(norm)
 
         raw = (
-            f"https://raw.githubusercontent.com/{owner}/{repo}/"
-            f"{default_branch}/{path}"
+            f"https://raw.githubusercontent.com/{owner}/{repo}/{default_branch}/{path}"
         )
         try:
             rf = client.get(

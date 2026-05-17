@@ -1,9 +1,11 @@
 import os
-import sys
 import time
 import uuid
-from pathlib import Path
 
+from corpus.db import get_connection
+from corpus.embeddings import embed_query
+from corpus.postgres_chat_message_history import PostgresChatMessageHistory
+from corpus.sql_queries import INSERT_CONVERSATION_IF_ABSENT
 from fastapi import FastAPI, HTTPException
 from langchain_core.messages import AIMessage, HumanMessage
 from langchain_core.output_parsers import StrOutputParser
@@ -12,26 +14,15 @@ from langchain_core.runnables.history import RunnableWithMessageHistory
 from langchain_huggingface import ChatHuggingFace, HuggingFaceEndpoint
 from pydantic import BaseModel, Field
 
-_backend_dir = Path(__file__).resolve().parent
-_repo_root = _backend_dir.parent
-if str(_repo_root) not in sys.path:
-    sys.path.insert(0, str(_repo_root))
-
-from utils.env_loader import load_repo_dotenv  # noqa: E402
-
-load_repo_dotenv()
-
-from corpus.db import get_connection  # noqa: E402
-from corpus.embeddings import embed_query  # noqa: E402
-from corpus.postgres_chat_message_history import PostgresChatMessageHistory  # noqa: E402
-from corpus.sql_queries import INSERT_CONVERSATION_IF_ABSENT  # noqa: E402
-from .prompts import PRIMARY_SYSTEM_PROMPT  # noqa: E402
-from .retrieve import search_by_embedding  # noqa: E402
+from .prompts import PRIMARY_SYSTEM_PROMPT
+from .retrieve import search_by_embedding
 
 
 def get_session_history(session_id: str) -> PostgresChatMessageHistory:
     max_toks = int(os.environ["CHAT_HISTORY_MAX_TOKENS"])
-    return PostgresChatMessageHistory(session_id=session_id, max_history_tokens=max_toks)
+    return PostgresChatMessageHistory(
+        session_id=session_id, max_history_tokens=max_toks
+    )
 
 
 def _ensure_conversation_row(session_id: str) -> None:
@@ -127,7 +118,9 @@ def query(req: QueryRequest):
     try:
         rows = search_by_embedding(q_vec, req.top_k)
     except Exception as e:
-        raise HTTPException(status_code=502, detail=f"Database query failed: {e}") from e
+        raise HTTPException(
+            status_code=502, detail=f"Database query failed: {e}"
+        ) from e
 
     if not rows:
         canned = "No matching documents were found in the database."

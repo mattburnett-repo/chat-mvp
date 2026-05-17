@@ -1,16 +1,8 @@
 import os
-import sys
-from pathlib import Path
 
 import psycopg2
+import utils.env_loader  # noqa: F401
 
-_repo_root = Path(__file__).resolve().parent.parent
-if str(_repo_root) not in sys.path:
-    sys.path.insert(0, str(_repo_root))
-
-from utils.env_loader import load_repo_dotenv  # noqa: E402
-
-load_repo_dotenv()
 
 def get_connection():
     return psycopg2.connect(

@@ -4,7 +4,7 @@ Ingest: (1) GitHub README + dev files linked from README (API + raw),
 
 Each source becomes one or more `documents` rows. Re-run replaces chunks per URL.
 
-Run from repo root:  .venv/bin/python corpus/ingest/crawl.py
+Run from repo root:  .venv/bin/python -m corpus.ingest.crawl
 
 Requires: database env vars, `documents` with unique (source_url, chunk_index).
 
@@ -15,9 +15,7 @@ CHUNK_MAX_CHARS, CHUNK_OVERLAP_CHARS.
 from __future__ import annotations
 
 import os
-import sys
 import time
-from pathlib import Path
 from urllib.parse import urlparse, urlunparse
 
 import httpx
@@ -25,22 +23,14 @@ import trafilatura
 from bs4 import BeautifulSoup
 from psycopg2.extras import Json
 
-_ROOT = Path(__file__).resolve().parents[2]
-if str(_ROOT) not in sys.path:
-    sys.path.insert(0, str(_ROOT))
-
-from chunking import chunk_text  # noqa: E402
-
-from corpus.db import get_connection  # noqa: E402
-from utils.env_loader import load_repo_dotenv  # noqa: E402
-from corpus.sql_queries import (  # noqa: E402
+from corpus.db import get_connection
+from corpus.ingest.chunking import chunk_text
+from corpus.ingest.github_readme import iter_github_readme_docs
+from corpus.ingest.sources import GITHUB_OWNER, GITHUB_REPO, SEED_URLS
+from corpus.sql_queries import (
     DELETE_DOCUMENTS_FOR_SOURCE_URL,
     INSERT_DOCUMENT_CHUNK,
 )
-from github_readme import iter_github_readme_docs  # noqa: E402
-from sources import GITHUB_OWNER, GITHUB_REPO, SEED_URLS  # noqa: E402
-
-load_repo_dotenv()
 
 MAX_PAGES = int(os.environ["CRAWL_MAX_PAGES"].strip())
 REQUEST_TIMEOUT_S = float(os.environ["CRAWL_REQUEST_TIMEOUT_S"].strip())
@@ -85,7 +75,10 @@ def _store_chunked_text(
     text: str,
     kind: str,
 ) -> int:
-    """Delete prior rows for url, insert chunks. Returns chunk count, or 0 if nothing stored."""
+    """Delete prior rows for url, insert chunks.
+
+    Returns chunk count, or 0 if nothing stored.
+    """
     text = _strip_html_tags(text).strip()
     chunks = chunk_text(text)
     if not chunks:
@@ -189,7 +182,7 @@ def main() -> None:
     print(f"Done. Sources stored (chunked): {pages_stored}")
     print(
         "Next step: compute embeddings — from repo root: "
-        "cd corpus && python3.13.12 embed.py (or `.venv/bin/python` from a 3.13.12 venv)."
+        ".venv/bin/python -m corpus.embed"
     )
 
 

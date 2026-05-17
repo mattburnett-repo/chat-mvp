@@ -1,10 +1,12 @@
 """Reference DDL for the project database (documentation only; not executed by imports).
 
-Copy into pgAdmin or psql as needed. Requires pgvector: `CREATE EXTENSION IF NOT EXISTS vector;`
+Copy into pgAdmin or psql as needed. Requires pgvector:
+`CREATE EXTENSION IF NOT EXISTS vector;`
 """
 
 # Option A — session-scoped chat memory (LangChain-friendly JSONB per message).
-# Optional `conversations` row is not required for storage but supports titles / last-active later.
+# Optional `conversations` row is not required for storage but supports
+# titles / last-active later.
 SCHEMA_CONVERSATIONS_SQL = r"""
 -- Table: public.conversations (session metadata; optional for MVP)
 
@@ -41,7 +43,11 @@ TABLESPACE pg_default;
 
 CREATE INDEX IF NOT EXISTS chat_messages_session_created_idx
     ON public.chat_messages USING btree
-    (session_id COLLATE pg_catalog."default" ASC NULLS LAST, created_at ASC NULLS LAST, id ASC NULLS LAST)
+    (
+        session_id COLLATE pg_catalog."default" ASC NULLS LAST,
+        created_at ASC NULLS LAST,
+        id ASC NULLS LAST,
+    )
     TABLESPACE pg_default;
 """
 
