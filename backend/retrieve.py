@@ -1,17 +1,7 @@
 """Vector search against the shared `corpus` layer."""
 
-import sys
-from pathlib import Path
-
-_repo_root = Path(__file__).resolve().parent.parent
-if str(_repo_root) not in sys.path:
-    sys.path.insert(0, str(_repo_root))
-
-from corpus.db import get_connection  # noqa: E402
-from corpus.sql_queries import SELECT_DOCUMENTS_BY_VECTOR_SIMILARITY  # noqa: E402
-from utils.env_loader import load_repo_dotenv  # noqa: E402
-
-load_repo_dotenv()
+from corpus.db import get_connection
+from corpus.sql_queries import SELECT_DOCUMENTS_BY_VECTOR_SIMILARITY
 
 
 def _to_pgvector_literal(vec: list[float]) -> str:
@@ -19,7 +9,9 @@ def _to_pgvector_literal(vec: list[float]) -> str:
     return "[" + ",".join(str(float(x)) for x in vec) + "]"
 
 
-def search_by_embedding(embedding: list[float], top_k: int) -> list[tuple[str, int, str]]:
+def search_by_embedding(
+    embedding: list[float], top_k: int
+) -> list[tuple[str, int, str]]:
     """Return rows: (source_url, chunk_index, content)."""
     conn = get_connection()
     try:

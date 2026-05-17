@@ -3,16 +3,8 @@
 from __future__ import annotations
 
 import os
-import sys
-from pathlib import Path
 
-_repo_root = Path(__file__).resolve().parents[2]
-if str(_repo_root) not in sys.path:
-    sys.path.insert(0, str(_repo_root))
-
-from utils.env_loader import load_repo_dotenv  # noqa: E402
-
-load_repo_dotenv()
+import utils.env_loader  # noqa: F401
 
 # ~500 tokens at ~4 chars/token; overlap preserves context across boundaries.
 CHUNK_MAX_CHARS = int(os.environ["CHUNK_MAX_CHARS"].strip())

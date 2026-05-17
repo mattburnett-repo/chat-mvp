@@ -1,4 +1,4 @@
-from db import get_connection
+from corpus.db import get_connection
 
 conn = None
 cur = None

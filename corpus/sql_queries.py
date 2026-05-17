@@ -13,7 +13,9 @@ DELETE_DOCUMENTS_FOR_SOURCE_URL = """
 """
 
 INSERT_DOCUMENT_CHUNK = """
-    INSERT INTO documents (source_url, chunk_index, title, content, fetched_at, metadata)
+    INSERT INTO documents (
+        source_url, chunk_index, title, content, fetched_at, metadata
+    )
     VALUES (%s, %s, %s, %s, NOW(), %s)
 """
 

@@ -11,3 +11,6 @@ def repo_root() -> Path:
 
 def load_repo_dotenv() -> None:
     load_dotenv(repo_root() / ".env")
+
+
+load_repo_dotenv()

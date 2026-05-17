@@ -1,10 +1,8 @@
-"""Postgres-backed LangChain `BaseChatMessageHistory` (JSONB rows in `chat_messages`)."""
+"""Postgres-backed LangChain BaseChatMessageHistory (JSONB in chat_messages)."""
 
 from __future__ import annotations
 
-import sys
 from collections.abc import Sequence
-from pathlib import Path
 
 from langchain_core.chat_history import BaseChatMessageHistory
 from langchain_core.messages import (
@@ -15,19 +13,12 @@ from langchain_core.messages import (
 )
 from psycopg2.extras import Json
 
-_repo_root = Path(__file__).resolve().parent.parent
-if str(_repo_root) not in sys.path:
-    sys.path.insert(0, str(_repo_root))
-
-from corpus.db import get_connection  # noqa: E402
-from corpus.sql_queries import (  # noqa: E402
+from corpus.db import get_connection
+from corpus.sql_queries import (
     DELETE_CHAT_MESSAGES_FOR_SESSION,
     INSERT_CHAT_MESSAGE,
     SELECT_CHAT_MESSAGES_FOR_SESSION,
 )
-from utils.env_loader import load_repo_dotenv  # noqa: E402
-
-load_repo_dotenv()
 
 
 class PostgresChatMessageHistory(BaseChatMessageHistory):
