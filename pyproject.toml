@@ -15,6 +15,7 @@ include = ["backend*", "corpus*", "utils*"]
 target-version = "py313"
 line-length = 88
 src = ["backend", "corpus", "frontend", "utils"]
+extend-exclude = ["evaluations"]
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "UP", "B"]
