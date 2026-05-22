@@ -6,10 +6,18 @@ Run from repo root: python3.13.12 -m streamlit run frontend/app.py
 from __future__ import annotations
 
 import os
+import sys
+from pathlib import Path
 
-import httpx
-import streamlit as st
-import utils.env_loader  # noqa: F401
+# Streamlit Cloud entrypoint is frontend/app.py.
+# Repo root must be on sys.path so `utils` can be imported.
+_REPO_ROOT = Path(__file__).resolve().parent.parent
+if str(_REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(_REPO_ROOT))
+
+import httpx  # noqa: E402
+import streamlit as st  # noqa: E402
+import utils.env_loader  # noqa: F401, E402
 
 
 def api_base() -> str:
