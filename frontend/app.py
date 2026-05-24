@@ -9,6 +9,8 @@ import os
 import sys
 from pathlib import Path
 
+# *** START DO NOT CHANGE ***
+
 # Streamlit Cloud entrypoint is frontend/app.py.
 # Repo root must be on sys.path so `utils` can be imported.
 _REPO_ROOT = Path(__file__).resolve().parent.parent
@@ -18,6 +20,8 @@ if str(_REPO_ROOT) not in sys.path:
 import httpx  # noqa: E402
 import streamlit as st  # noqa: E402
 import utils.env_loader  # noqa: F401, E402
+
+# *** END DO NOT CHANGE ***
 
 
 def api_base() -> str:

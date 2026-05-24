@@ -80,14 +80,16 @@ def _primary_llm_settings() -> tuple[str, str, str]:
 def get_hf_chat_llm(
     temperature: float = 0.0, max_new_tokens: int = 256
 ) -> ChatHuggingFace:
-    model, api_key, provider = _primary_llm_settings()
+    hf_model, api_key, provider = _primary_llm_settings()
     if not api_key.startswith("hf_"):
         raise ValueError("PRIMARY_LLM_KEY must be a Hugging Face token (hf_...)")
     llm = HuggingFaceEndpoint(
-        repo_id=model,
-        huggingfacehub_api_token=api_key,
+        model=hf_model,
+        task="text-generation",
         provider=provider,
         temperature=temperature,
+        do_sample=False,
+        huggingfacehub_api_token=api_key,
         max_new_tokens=max_new_tokens,
     )
     return ChatHuggingFace(llm=llm)
@@ -200,7 +202,8 @@ class RAGMonitor:
                     HumanMessage(content=prompt),
                 ]
             )
-            answer = msg.content if hasattr(msg, "content") else str(msg)
+            raw_content = msg.content if hasattr(msg, "content") else str(msg)
+            answer = raw_content if isinstance(raw_content, str) else str(raw_content)
         except Exception as exc:
             error = str(exc)
 

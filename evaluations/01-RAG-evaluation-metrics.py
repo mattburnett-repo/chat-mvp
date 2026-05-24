@@ -1,5 +1,7 @@
 """
-🔍 Understanding the RAGEvaluator Class:
+RAGAS evaluation — faithfulness, context precision/recall, answer relevancy/correctness.
+
+🔍 RAGEvaluator components:
 
 Key Components:
 • Metric Selection: Choose which RAGAS metrics to evaluate (defaults to comprehensive set)
@@ -56,11 +58,10 @@ Context Precision:
 • Run evaluations periodically to catch regressions
 """
 
-# How to evaluate RAG systems with RAGAS framework - step-by-step implementation
 import os
 import warnings
 from pathlib import Path
-from typing import Any
+from typing import Any, cast
 
 from datasets import Dataset
 from dotenv import load_dotenv
@@ -125,10 +126,12 @@ def get_primary_llm() -> ChatHuggingFace:
     if not api_key.startswith("hf_"):
         raise ValueError("PRIMARY_LLM_KEY must be a Hugging Face token (hf_...)")
     llm = HuggingFaceEndpoint(
-        repo_id=model,
-        huggingfacehub_api_token=api_key,
+        model=model,
+        task="text-generation",
         provider=provider,
         temperature=0,
+        do_sample=False,
+        huggingfacehub_api_token=api_key,
         max_new_tokens=1024,  # answer_correctness emits long JSON; 512 caused LLMDidNotFinishException
     )
     return ChatHuggingFace(llm=llm)
@@ -168,7 +171,7 @@ def _format_score(score: Any) -> str:
 
 
 class RAGEvaluator:
-    """Learn how to evaluate LangChain RAG systems with RAGAS - complete tutorial"""
+    """Run RAGAS metrics over prepared test cases."""
 
     def __init__(self, metrics=None, llm=None, embeddings=None):
         self.metrics = metrics or [
@@ -211,7 +214,7 @@ class RAGEvaluator:
             embeddings=self.embeddings,
         )
 
-        df = results.to_pandas()
+        df = cast(Any, results).to_pandas()
 
         evaluation_report = {
             "overall_scores": {},
@@ -223,9 +226,10 @@ class RAGEvaluator:
             metric_name = _metric_name(metric)
             evaluation_report["overall_scores"][metric_name] = df[metric_name].mean()
 
-        for idx, row in df.iterrows():
+        for i in range(len(test_cases)):
+            row = df.iloc[i]
             question_scores = {
-                "question": test_cases[idx]["question"],
+                "question": test_cases[i]["question"],
                 "scores": {},
             }
             for metric in self.metrics:

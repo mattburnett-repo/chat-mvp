@@ -59,6 +59,10 @@ docs/         Project planning documents
    pip install -r requirements.txt
    pip install -e .
    ```
+   `requirements.txt` installs third-party packages only. **`pip install -e .` is required**
+   — it registers this repo (`backend`, `corpus`, `utils`) as an editable package
+   so imports work from anywhere (eval scripts, `corpus` CLI, uvicorn). Run it from
+   the repo root after every fresh venv or clone.
 2. Copy `.env.sample` to `.env` and fill in values:
    ```bash
    cp .env.sample .env

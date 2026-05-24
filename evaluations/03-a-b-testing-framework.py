@@ -54,7 +54,7 @@ import time
 from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
-from typing import Any
+from typing import Any, cast
 
 import numpy as np
 import pandas as pd
@@ -86,14 +86,16 @@ def get_hf_chat_llm(
     temperature: float = 0.0, max_new_tokens: int = 512
 ) -> ChatHuggingFace:
     """Hugging Face chat LLM for A/B variants (provider from .env)."""
-    model, api_key, provider = _primary_llm_settings()
+    hf_model, api_key, provider = _primary_llm_settings()
     if not api_key.startswith("hf_"):
         raise ValueError("PRIMARY_LLM_KEY must be a Hugging Face token (hf_...)")
     llm = HuggingFaceEndpoint(
-        repo_id=model,
-        huggingfacehub_api_token=api_key,
+        model=hf_model,
+        task="text-generation",
         provider=provider,
         temperature=temperature,
+        do_sample=False,
+        huggingfacehub_api_token=api_key,
         max_new_tokens=max_new_tokens,
     )
     return ChatHuggingFace(llm=llm)
@@ -352,7 +354,7 @@ class RAGABTester:
 
             for metric in metrics:
                 if metric in variant_df.columns:
-                    metric_data = variant_df[metric].dropna()
+                    metric_data = variant_df.loc[:, metric].dropna()
                     if len(metric_data) > 0:
                         analysis["summary"][variant]["metrics"][metric] = {
                             "mean": metric_data.mean(),
@@ -366,11 +368,12 @@ class RAGABTester:
             variants = list(self.variants.keys())
             for metric in metrics:
                 if metric in df.columns:
-                    group1 = df[df["variant_name"] == variants[0]][metric].dropna()
-                    group2 = df[df["variant_name"] == variants[1]][metric].dropna()
+                    group1 = df.loc[df["variant_name"] == variants[0], metric].dropna()
+                    group2 = df.loc[df["variant_name"] == variants[1], metric].dropna()
 
                     if len(group1) > 1 and len(group2) > 1:
-                        t_stat, p_value = stats.ttest_ind(group1, group2)
+                        t_stat, p_value_raw = stats.ttest_ind(group1, group2)
+                        p_value = cast(float, p_value_raw)
 
                         analysis["statistical_tests"][metric] = {
                             "test": "independent_t_test",
