@@ -1,0 +1,196 @@
+PDF export enabled.
+Capturing output to: /Volumes/projectDrive/projects/webDev/ai/langchain/langchain_tutorial/lesson_15/run-report.txt
+Started: 2026-05-20T09:48:54
+
+Project: /Volumes/projectDrive/projects/webDev/ai/langchain/langchain_tutorial
+Python:  /Volumes/projectDrive/projects/webDev/ai/langchain/langchain_tutorial/.venv/bin/python
+Running 5 script(s) in lesson_15/
+
+============================================================
+[1/5] Running: howToA-B.py
+============================================================
+Running A/B test with 2 queries...
+Testing 2 variants: ['baseline', 'optimized']
+
+=== A/B Test Report ===
+
+baseline:
+  queries: 2, success: 100.00%
+  response_time: mean=346.201 (?288.467)
+  relevancy_score: mean=0.550 (?0.198)
+  cost: mean=0.000 (?0.000)
+  user_satisfaction: mean=0.544 (?0.047)
+optimized:
+  queries: 2, success: 100.00%
+  response_time: mean=135.187 (?8.259)
+  relevancy_score: mean=0.550 (?0.198)
+  cost: mean=0.000 (?0.000)
+  user_satisfaction: mean=0.491 (?0.172)
+
+Recommendations:
+  - Variant 'optimized' shows the best overall performance
+
+============================================================
+[2/5] Running: howToCreateCustomMetrics.py
+============================================================
+Hallucination Score: 0.250
+Completeness Score: 0.400
+Response Time Score: 1.000
+
+============================================================
+[3/5] Running: howToUse.py
+============================================================
+
+
+For more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/402
+
+You have depleted your monthly included credits. Purchase pre-paid credits to continue using Inference Providers. Alternatively, subscribe to PRO to get 20x more included usage.)
+
+For more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/402
+
+You have depleted your monthly included credits. Purchase pre-paid credits to continue using Inference Providers. Alternatively, subscribe to PRO to get 20x more included usage.)
+
+
+
+Bad request:)
+
+=== RAG System Evaluation Report ===
+
+Overall Scores:
+  context_precision: 1.000
+  context_recall: 0.833
+  answer_relevancy: 0.652
+  faithfulness: 1.000
+  answer_correctness: nan
+
+Metric Analysis:
+
+context_precision:
+  Mean: 1.000 (?0.000)
+  Range: [1.000, 1.000]
+  Median: 1.000
+
+context_recall:
+  Mean: 0.833 (?0.236)
+  Range: [0.667, 1.000]
+  Median: 0.833
+
+answer_relevancy:
+  Mean: 0.652 (?nan)
+  Range: [0.652, 0.652]
+  Median: 0.652
+
+faithfulness:
+  Mean: 1.000 (?nan)
+  Range: [1.000, 1.000]
+  Median: 1.000
+
+answer_correctness:
+  Mean: nan (?nan)
+  Range: [nan, nan]
+  Median: nan
+
+Areas for Improvement:
+  [!] answer_correctness: failed (no score)
+  [!] answer_relevancy: 0.652
+
+============================================================
+[4/5] Running: monitorProduction.py
+============================================================
+ERROR: Query hf_0 failed: Client error '402 Payment Required' for url 'https://router.huggingface.co/v1/chat/completions' (Request ID: Root=1-6a0dbb79-3e94134e2fe8a6136bc2956a;52bb45c4-158a-4652-b077-314a928dee5c)
+For more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/402
+
+You have depleted your monthly included credits. Purchase pre-paid credits to continue using Inference Providers. Alternatively, subscribe to PRO to get 20x more included usage.
+WARNING: Alert: error_rate is 1.000 (above threshold 0.05)
+WARNING: Alert: relevancy_score is 0.000 (below threshold 0.7)
+ERROR: Query hf_1 failed: Client error '402 Payment Required' for url 'https://router.huggingface.co/v1/chat/completions' (Request ID: Root=1-6a0dbb79-2d7f5c6b2cfdd78e2d1f4f15;fbc95cb4-ccde-445d-b627-6e1c20bd6b8b)
+For more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/402
+
+You have depleted your monthly included credits. Purchase pre-paid credits to continue using Inference Providers. Alternatively, subscribe to PRO to get 20x more included usage.
+WARNING: Alert: error_rate is 1.000 (above threshold 0.05)
+WARNING: Alert: relevancy_score is 0.000 (below threshold 0.7)
+WARNING: Alert: error_rate is 0.667 (above threshold 0.05)
+WARNING: Alert: relevancy_score is 0.302 (below threshold 0.7)
+WARNING: Alert: error_rate is 0.500 (above threshold 0.05)
+WARNING: Alert: relevancy_score is 0.456 (below threshold 0.7)
+ERROR: Query sim_2 failed: Timeout
+WARNING: Alert: error_rate is 0.600 (above threshold 0.05)
+WARNING: Alert: relevancy_score is 0.553 (below threshold 0.7)
+WARNING: Alert: error_rate is 0.500 (above threshold 0.05)
+WARNING: Alert: relevancy_score is 0.587 (below threshold 0.7)
+WARNING: Alert: error_rate is 0.429 (above threshold 0.05)
+WARNING: Alert: relevancy_score is 0.638 (below threshold 0.7)
+WARNING: Alert: error_rate is 0.375 (above threshold 0.05)
+WARNING: Alert: relevancy_score is 0.656 (below threshold 0.7)
+WARNING: Alert: error_rate is 0.333 (above threshold 0.05)
+WARNING: Alert: relevancy_score is 0.676 (below threshold 0.7)
+WARNING: Alert: error_rate is 0.300 (above threshold 0.05)
+WARNING: Alert: relevancy_score is 0.695 (below threshold 0.7)
+WARNING: Alert: error_rate is 0.273 (above threshold 0.05)
+WARNING: Alert: error_rate is 0.250 (above threshold 0.05)
+Recording live HF queries...
+=== RAG System Dashboard (Hugging Face) ===
+Model: meta-llama/Llama-3.1-8B-Instruct (provider: auto)
+Embeddings: sentence-transformers/all-MiniLM-L6-v2 (hf-inference)
+Health Score: 61.6/100
+
+Current Metrics (5 min):
+  error_rate: 0.250
+  p50_latency_ms: 1146.198
+  p95_latency_ms: 1635.572
+  p99_latency_ms: 1636.967
+  relevancy_score: 0.716
+  cost: 0.000
+  cost_per_query: 0.000
+
+Recent Alerts:
+  [09:51:43] Alert: relevancy_score is 0.676 (below threshold 0.7)
+  [09:51:43] Alert: error_rate is 0.300 (above threshold 0.05)
+  [09:51:43] Alert: relevancy_score is 0.695 (below threshold 0.7)
+  [09:51:43] Alert: error_rate is 0.273 (above threshold 0.05)
+  [09:51:43] Alert: error_rate is 0.250 (above threshold 0.05)
+
+Trends (newer half vs older half of session when run is short):
+  error_rate: v 100.0%
+  p50_latency_ms: ^ 18.7%
+  p95_latency_ms: v 14.6%
+  p99_latency_ms: v 14.4%
+  relevancy_score: ^ 32.6%
+  cost: ^ 42.1%
+  cost_per_query: ^ 65.8%
+
+============================================================
+[5/5] Running: optimizeRagCost.py
+============================================================
+Model: meta-llama/Llama-3.1-8B-Instruct
+Embeddings: sentence-transformers/all-MiniLM-L6-v2 (hf-inference)
+Monthly cost (estimate): $19.88
+Cost per query (estimate): $0.0004
+
+Cost breakdown:
+  embedding: $0.38
+  retrieval: $0.00
+  generation: $19.50
+
+Tips:
+  - Lower retrieval_k to 3 to cut input tokens to the chat model.
+  - Use ~500-token chunks to reduce context size per query.
+  - Chat uses Inference Providers (auto); embeddings use hf-inference - track both quotas.
+
+Optimization suggestions:
+  - Reduce chunk size to 500 tokens: ~20% potential savings
+  - Reduce retrieval_k to 3: ~40% potential savings
+  - Cache HF responses for common queries (disk or Redis): ~60% potential savings
+  - Run embeddings on hf-inference; keep chat on auto only when needed: ~15% potential savings
+
+============================================================
+Summary
+============================================================
+  howToA-B.py: OK
+  howToCreateCustomMetrics.py: OK
+  howToUse.py: OK
+  monitorProduction.py: OK
+  optimizeRagCost.py: OK
+
+All scripts completed successfully.
+Finished: 2026-05-20T09:51:44
