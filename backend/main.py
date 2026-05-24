@@ -14,8 +14,9 @@ from langchain_core.runnables.history import RunnableWithMessageHistory
 from langchain_huggingface import ChatHuggingFace, HuggingFaceEndpoint
 from pydantic import BaseModel, Field
 
-from .prompts import PRIMARY_SYSTEM_PROMPT
-from .retrieve import search_by_embedding
+from backend.prompts import PRIMARY_SYSTEM_PROMPT
+from backend.rag import NO_MATCH_ANSWER, format_retrieval
+from backend.retrieve import search_by_embedding
 
 
 def get_session_history(session_id: str) -> PostgresChatMessageHistory:
@@ -123,7 +124,7 @@ def query(req: QueryRequest):
         ) from e
 
     if not rows:
-        canned = "No matching documents were found in the database."
+        canned = NO_MATCH_ANSWER
         try:
             get_session_history(session_id).add_messages(
                 [HumanMessage(content=req.query), AIMessage(content=canned)]
@@ -134,14 +135,10 @@ def query(req: QueryRequest):
             ) from e
         return QueryResponse(answer=canned, sources=[], session_id=session_id)
 
-    context_blocks = []
-    sources: list[SourceRef] = []
-    for source_url, chunk_index, content in rows:
-        sources.append(SourceRef(source_url=source_url, chunk_index=chunk_index))
-        context_blocks.append(
-            f"[source_url={source_url!r} chunk_index={chunk_index}]\n{content}"
-        )
-    context = "\n\n---\n\n".join(context_blocks)
+    context, sources, _ = format_retrieval(rows)
+    source_refs = [
+        SourceRef(source_url=s.source_url, chunk_index=s.chunk_index) for s in sources
+    ]
 
     for attempt in range(4):
         try:
@@ -149,7 +146,9 @@ def query(req: QueryRequest):
                 {"context": context, "question": req.query},
                 config={"configurable": {"session_id": session_id}},
             )
-            return QueryResponse(answer=answer, sources=sources, session_id=session_id)
+            return QueryResponse(
+                answer=answer, sources=source_refs, session_id=session_id
+            )
         except Exception as e:
             if attempt < 3 and "429" in str(e).lower():
                 time.sleep(2)
