@@ -37,6 +37,8 @@ frontend/     Streamlit chat UI that calls the backend
 corpus/       DB connection, schema reference, ingestion, embedding, chat history
   ingest/     GitHub README + seed-URL crawler and chunker
 utils/        Shared helpers (env loading)
+evaluations/  RAG evaluation suite (see below)
+  lib/        Harness, reference test cases, baseline scores
 docs/         Project planning documents
 .env.sample   Template for required environment variables
 ```
@@ -143,6 +145,41 @@ UI can continue the conversation. Chat history is persisted in
 default `3000`) before each model call.
 
 `GET /health` returns `{"status": "ok"}`.
+
+## Evaluations
+
+The `evaluations/` folder holds an **evaluation suite** — the LLM/RAG
+equivalent of automated tests. Scripts run against a shared reference set
+(`evaluations/lib/reference_cases.json`) and the same models configured in
+`.env` (`PRIMARY_LLM_*`, `EMBEDDING_MODEL`). Scripts **01** and **02** call
+the live RAG pipeline via `evaluations/lib/harness.py` (embed, retrieve,
+generate); they require ingested corpus data and Hugging Face API access.
+
+| Script | Purpose |
+|--------|---------|
+| `01-RAG-evaluation-metrics.py` | **RAGAS** scores: faithfulness, context precision/recall, answer relevancy and correctness. |
+| `02-custom-evaluation-metrics.py` | **Project-specific** scores: hallucination, completeness, source retrieval, latency, no-match behavior. |
+| `03-a-b-testing-framework.py` | **A/B demo**: compare RAG config variants (prompt, `k`, chunk size) with statistical testing. |
+| `04-cost-optimization.py` | **Cost model**: estimate monthly spend from assumed usage (no live API calls). |
+| `05-production-monitoring.py` | **Monitoring demo**: query latency, relevancy, error rates, health score, and alerts. |
+
+Run all numbered scripts from the repo root:
+
+```bash
+.venv/bin/python evaluations/run-evaluations.py
+```
+
+Options:
+
+- `--quick` — skip script 01 (RAGAS; slowest and most API-heavy).
+- `--update-baseline` — save metric means to `evaluations/lib/baseline-scores.json`.
+- `--pdf` — capture output to `evaluations/run-report.txt` / `.pdf`.
+
+Run a single script, e.g.:
+
+```bash
+.venv/bin/python evaluations/02-custom-evaluation-metrics.py
+```
 
 ## Notes
 
