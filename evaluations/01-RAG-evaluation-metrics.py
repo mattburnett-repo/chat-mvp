@@ -80,13 +80,10 @@ from ragas.metrics import (
 )
 from ragas.run_config import RunConfig
 
+from corpus.embeddings import embedding_model_name
+
 load_dotenv(Path(__file__).resolve().parent.parent / ".env")
 warnings.filterwarnings("ignore", category=DeprecationWarning)
-
-# Chat models (e.g. Llama) are not embedding models; use a small HF embedding model on the same API key
-HF_EMBEDDING_MODEL = "sentence-transformers/all-MiniLM-L6-v2"
-# Embeddings model runs on serverless hf-inference even when the chat model uses another provider
-HF_EMBEDDING_PROVIDER = "hf-inference"
 
 
 class HFEmbeddingsForMetrics(BaseRagasEmbeddings):
@@ -138,21 +135,17 @@ def get_primary_llm() -> ChatHuggingFace:
 
 
 def get_primary_embeddings() -> HFEmbeddingsForMetrics:
-    """Cloud Hugging Face embeddings (hf-inference), LangChain-compatible for RAGAS metrics."""
+    """Hugging Face embeddings for RAGAS metrics (same model as corpus/backend)."""
     from huggingface_hub import InferenceClient
 
     _, api_key, _ = _primary_llm_settings()
+    model = embedding_model_name()
     inner = RagasHFEmbeddings(
-        model=HF_EMBEDDING_MODEL,
+        model=model,
         use_api=True,
         api_key=api_key,
     )
-    # Embedding model is on hf-inference; do not reuse the chat model's provider (e.g. auto).
-    inner.client = InferenceClient(
-        model=HF_EMBEDDING_MODEL,
-        token=api_key,
-        provider=HF_EMBEDDING_PROVIDER,
-    )
+    inner.client = InferenceClient(token=api_key)
     return HFEmbeddingsForMetrics(inner)
 
 
@@ -295,29 +288,45 @@ class RAGEvaluator:
 
 
 if __name__ == "__main__":
+    import sys
+
+    _eval_dir = Path(__file__).resolve().parent
+    if str(_eval_dir) not in sys.path:
+        sys.path.insert(0, str(_eval_dir))
+
+    from lib.baseline import (
+        check_regression,
+        load_baseline,
+        save_baseline,
+        should_update_baseline,
+    )
+    from lib.harness import run_all_cases, to_ragas_test_cases
+
+    print("Running reference cases through RAG harness...")
+    results = run_all_cases()
+    test_cases = to_ragas_test_cases(results)
+
     evaluator = RAGEvaluator()
-
-    test_cases = [
-        {
-            "question": "What is the capital of France?",
-            "generated_answer": "The capital of France is Paris.",
-            "retrieved_contexts": [
-                "Paris is the capital and largest city of France.",
-                "France is a country in Western Europe.",
-            ],
-            "ground_truth": "Paris is the capital of France.",
-        },
-        {
-            "question": "Explain photosynthesis process",
-            "generated_answer": "Photosynthesis is the process by which plants convert sunlight into energy.",
-            "retrieved_contexts": [
-                "Photosynthesis is a process used by plants to convert light energy into chemical energy.",
-                "During photosynthesis, plants absorb carbon dioxide and release oxygen.",
-            ],
-            "ground_truth": "Photosynthesis is the process by which plants use sunlight, water, and carbon dioxide to create oxygen and energy in the form of sugar.",
-        },
-    ]
-
-    results = evaluator.evaluate_rag_system(test_cases)
-    report = evaluator.generate_evaluation_report(results)
+    report_data = evaluator.evaluate_rag_system(test_cases)
+    report = evaluator.generate_evaluation_report(report_data)
     print(report)
+
+    current = {
+        k: float(v)
+        for k, v in report_data["overall_scores"].items()
+        if isinstance(v, (int, float)) and v == v
+    }
+
+    if should_update_baseline():
+        baseline = load_baseline()
+        baseline["ragas"] = current
+        save_baseline(baseline)
+        print("\nBaseline updated (ragas).")
+    else:
+        baseline_ragas = load_baseline().get("ragas", {})
+        failures = check_regression(current, {"metrics": baseline_ragas})
+        if failures:
+            print("\nRegression vs baseline:")
+            for line in failures:
+                print(f"  - {line}")
+            raise SystemExit(1)

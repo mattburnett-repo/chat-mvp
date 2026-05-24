@@ -42,6 +42,19 @@ Context Optimization:
 • Monitor quality metrics after optimizations
 • Consider user segments - some may need premium quality
 • Factor in hidden costs (development, maintenance)
+
+===
+
+How estimates are generated (criteria only):    
+
+hard-coded around line 313 in this file:
+    usage_stats = {
+        "monthly_queries": 50000,
+        "avg_doc_length": 1500,
+        "avg_chunks_retrieved": 5,
+        "avg_response_length": 300,
+    }
+
 """
 
 # How to optimize RAG costs in LangChain - complete implementation guide
@@ -51,9 +64,9 @@ from typing import Any
 
 from dotenv import load_dotenv
 
-load_dotenv(Path(__file__).resolve().parent.parent / ".env")
+from corpus.embeddings import embedding_model_name
 
-HF_EMBEDDING_MODEL = "sentence-transformers/all-MiniLM-L6-v2"
+load_dotenv(Path(__file__).resolve().parent.parent / ".env")
 
 # Legacy cloud cost table (OpenAI / Gemini) — kept for reference:
 # "gpt-3.5-turbo": {"input": 0.0015, "output": 0.002},
@@ -81,7 +94,7 @@ class RAGCostOptimizer:
     """Learn how to analyze and optimize LangChain RAG costs step-by-step (Hugging Face)."""
 
     def __init__(self):
-        self.embedding_model = HF_EMBEDDING_MODEL
+        self.embedding_model = embedding_model_name()
         # HF embedding via hf-inference (per 1K tokens, placeholder)
         self.embedding_rate_per_1k = 0.0001
         self.retrieval_rate_per_1k = (
@@ -295,7 +308,7 @@ if __name__ == "__main__":
     cost_per_query = cost_analysis.get("cost_per_query", 0)
 
     print(f"Model: {cost_analysis.get('model')}")
-    print(f"Embeddings: {cost_analysis.get('embedding_model')} (hf-inference)")
+    print(f"Embeddings: {cost_analysis.get('embedding_model')}")
     print(f"Monthly cost (estimate): ${monthly_cost:.2f}")
     print(f"Cost per query (estimate): ${cost_per_query:.4f}")
 

@@ -58,14 +58,12 @@ from typing import Any
 
 import numpy as np
 from dotenv import load_dotenv
-from huggingface_hub import InferenceClient
 from langchain_core.messages import HumanMessage, SystemMessage
 from langchain_huggingface import ChatHuggingFace, HuggingFaceEndpoint
 
-load_dotenv(Path(__file__).resolve().parent.parent / ".env")
+from corpus.embeddings import embed_document, embedding_model_name
 
-HF_EMBEDDING_MODEL = "sentence-transformers/all-MiniLM-L6-v2"
-HF_EMBEDDING_PROVIDER = "hf-inference"
+load_dotenv(Path(__file__).resolve().parent.parent / ".env")
 
 
 def _primary_llm_settings() -> tuple[str, str, str]:
@@ -358,7 +356,7 @@ class RAGMonitor:
         return {
             "hf_model": self.hf_model,
             "hf_provider": self.hf_provider,
-            "embedding_model": HF_EMBEDDING_MODEL,
+            "embedding_model": embedding_model_name(),
             "current": recent_metrics,
             "hourly": hourly_metrics,
             "trends": self._calculate_trends(),
@@ -382,20 +380,9 @@ class RAGMonitor:
 
 
 def _embedding_similarity(text_a: str, text_b: str) -> float:
-    """Relevancy proxy via HF embeddings API."""
-    api_key = (os.getenv("PRIMARY_LLM_KEY") or "").strip()
-    client = InferenceClient(
-        model=HF_EMBEDDING_MODEL,
-        token=api_key,
-        provider=HF_EMBEDDING_PROVIDER,
-    )
-
-    def encode(text: str) -> np.ndarray:
-        resp = client.feature_extraction(text)
-        vec = resp[0] if isinstance(resp[0], list) else resp
-        return np.array(vec, dtype=float)
-
-    a, b = encode(text_a), encode(text_b)
+    """Relevancy proxy via app embedding model (EMBEDDING_MODEL in .env)."""
+    a = np.array(embed_document(text_a), dtype=float)
+    b = np.array(embed_document(text_b), dtype=float)
     return float(np.dot(a, b) / (np.linalg.norm(a) * np.linalg.norm(b)))
 
 
@@ -410,7 +397,7 @@ class RAGDashboard:
 
         print("=== RAG System Dashboard (Hugging Face) ===")
         print(f"Model: {metrics['hf_model']} (provider: {metrics['hf_provider']})")
-        print(f"Embeddings: {metrics['embedding_model']} ({HF_EMBEDDING_PROVIDER})")
+        print(f"Embeddings: {metrics['embedding_model']}")
         print(f"Health Score: {metrics['health_score']:.1f}/100")
         print("\nCurrent Metrics (5 min):")
         for key, value in metrics["current"].items():

@@ -59,15 +59,13 @@ from typing import Any, cast
 import numpy as np
 import pandas as pd
 from dotenv import load_dotenv
-from huggingface_hub import InferenceClient
 from langchain_core.messages import HumanMessage, SystemMessage
 from langchain_huggingface import ChatHuggingFace, HuggingFaceEndpoint
 from scipy import stats
 
-load_dotenv(Path(__file__).resolve().parent.parent / ".env")
+from corpus.embeddings import embed_document
 
-HF_EMBEDDING_MODEL = "sentence-transformers/all-MiniLM-L6-v2"
-HF_EMBEDDING_PROVIDER = "hf-inference"
+load_dotenv(Path(__file__).resolve().parent.parent / ".env")
 
 # Legacy cloud cost table (OpenAI / Gemini) — kept for reference:
 # cost_per_1k = {"gpt-3.5-turbo": 0.002, "gpt-4": 0.03, "gemini-2.0-flash": 0.001}
@@ -102,20 +100,10 @@ def get_hf_chat_llm(
 
 
 class HFEmbeddingScorer:
-    """Semantic relevancy via HF Inference API (no local torch)."""
-
-    def __init__(self):
-        api_key = (os.getenv("PRIMARY_LLM_KEY") or "").strip()
-        self._client = InferenceClient(
-            model=HF_EMBEDDING_MODEL,
-            token=api_key,
-            provider=HF_EMBEDDING_PROVIDER,
-        )
+    """Semantic relevancy via app embedding model (EMBEDDING_MODEL in .env)."""
 
     def _encode_one(self, text: str) -> np.ndarray:
-        resp = self._client.feature_extraction(text)
-        vec = resp[0] if isinstance(resp[0], list) else resp
-        return np.array(vec, dtype=float)
+        return np.array(embed_document(text), dtype=float)
 
     def similarity(self, text_a: str, text_b: str) -> float:
         a, b = self._encode_one(text_a), self._encode_one(text_b)

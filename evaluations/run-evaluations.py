@@ -12,9 +12,10 @@ Optimization Approach
 • Implement gradual rollouts for safety
 """
 
-# Run every lesson_15 script (except this runner) with the project venv
+# Run numbered evaluation scripts (01-05) with the project venv
 from __future__ import annotations
 
+import argparse
 import os
 import re
 import shutil
@@ -60,12 +61,14 @@ REPORT_PDF = LESSON_DIR / "run-report.pdf"
 # PDF uses pdflatex + Computer Modern (default TeX font; ships with MacTeX/TeX Live).
 # No custom font packages — avoids DejaVu/Helvetica/fontspec issues on macOS.
 PDF_ENGINE = "pdflatex"
+QUICK_SKIP = {"01-RAG-evaluation-metrics.py"}
 
 
-def _scripts_to_run() -> list[Path]:
-    return sorted(
-        p for p in LESSON_DIR.glob("*.py") if p.is_file() and p.name != THIS_SCRIPT
-    )
+def _scripts_to_run(*, quick: bool = False) -> list[Path]:
+    scripts = sorted(LESSON_DIR.glob("[0-9]*.py"))
+    if quick:
+        scripts = [p for p in scripts if p.name not in QUICK_SKIP]
+    return scripts
 
 
 def _ask_pdf_export() -> bool:
@@ -104,11 +107,20 @@ def _sanitize_log_for_pdf(txt_path: Path) -> None:
 
 
 def _run_script(
-    path: Path, log: TextIO | None = None, *, quiet_progress: bool = False
+    path: Path,
+    log: TextIO | None = None,
+    *,
+    quiet_progress: bool = False,
+    update_baseline: bool = False,
 ) -> int:
     env = os.environ.copy()
+    env["PYTHONPATH"] = os.pathsep.join(
+        [str(LESSON_DIR), env.get("PYTHONPATH", "")]
+    ).strip(os.pathsep)
     if quiet_progress:
         env["TQDM_DISABLE"] = "1"
+    if update_baseline:
+        env["EVAL_UPDATE_BASELINE"] = "1"
 
     proc = subprocess.Popen(
         [str(PYTHON), "-W", "ignore", str(path)],
@@ -165,16 +177,34 @@ def _txt_to_pdf(txt_path: Path, pdf_path: Path) -> bool:
 
 
 def main() -> int:
+    parser = argparse.ArgumentParser(description="Run evaluation scripts 01-05.")
+    parser.add_argument(
+        "--quick",
+        action="store_true",
+        help="Skip expensive RAGAS script (01-RAG-evaluation-metrics.py).",
+    )
+    parser.add_argument(
+        "--update-baseline",
+        action="store_true",
+        help="Write metric means to evaluations/lib/baseline-scores.json.",
+    )
+    parser.add_argument(
+        "--pdf",
+        action="store_true",
+        help="Capture output to run-report.txt and convert to PDF.",
+    )
+    args = parser.parse_args()
+
     if not PYTHON.is_file():
         print(f"Missing venv interpreter: {PYTHON}", file=sys.stderr)
         return 1
 
-    scripts = _scripts_to_run()
+    scripts = _scripts_to_run(quick=args.quick)
     if not scripts:
         print("No scripts to run.")
         return 0
 
-    export_pdf = _ask_pdf_export()
+    export_pdf = args.pdf or _ask_pdf_export()
     log_file: TextIO | None = None
 
     if export_pdf:
@@ -188,6 +218,8 @@ def main() -> int:
     _emit(f"Project: {PROJECT_ROOT}", log_file)
     _emit(f"Python:  {PYTHON}", log_file)
     _emit(f"Running {len(scripts)} script(s) in {LESSON_DIR.name}/", log_file)
+    if args.quick:
+        _emit("(quick mode: skipping 01-RAG-evaluation-metrics.py)", log_file)
     _emit("", log_file)
 
     outcomes: list[tuple[str, int]] = []
@@ -203,7 +235,12 @@ def main() -> int:
             _emit(f"▶ {path.name}", log_file)
         _emit("=" * 60, log_file)
 
-        code = _run_script(path, log_file, quiet_progress=export_pdf)
+        code = _run_script(
+            path,
+            log_file,
+            quiet_progress=export_pdf,
+            update_baseline=args.update_baseline,
+        )
         outcomes.append((path.name, code))
         _emit("", log_file)
 
