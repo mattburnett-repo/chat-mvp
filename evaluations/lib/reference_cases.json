@@ -1,0 +1,182 @@
+{
+  "cases": [
+    {
+      "id": "mission",
+      "question": "What is the mission of the CIB Mango Tree project?",
+      "ground_truth": "CIB Mango Tree brings peer-reviewed research methods for detecting coordinated inauthentic behavior (CIB) on social media to journalists, fact-checkers, watchdogs, and researchers through an interactive analysis and dashboard app.",
+      "expected_source_urls": [
+        "https://civictechdc.github.io/cib-mango-tree/guides/contributing/new_contributor_guide/"
+      ],
+      "expected_aspects": ["coordinated inauthentic behavior", "journalists", "research methods"]
+    },
+    {
+      "id": "library-of-tests",
+      "question": "Why is CIB Mango Tree built as a library of tests rather than a single test?",
+      "ground_truth": "No single test can definitively prove social media activity is coordinated or inauthentic, so the project provides many complementary tests that each highlight different aspects of activity.",
+      "expected_source_urls": [
+        "https://civictechdc.github.io/cib-mango-tree/guides/contributing/new_contributor_guide/"
+      ],
+      "expected_aspects": ["library", "complementary", "different aspects"]
+    },
+    {
+      "id": "github-repo",
+      "question": "What GitHub organization and repository hosts CIB Mango Tree?",
+      "ground_truth": "The project lives at github.com/civictechdc/cib-mango-tree.",
+      "expected_source_urls": [
+        "https://github.com/civictechdc/cib-mango-tree"
+      ],
+      "expected_aspects": ["civictechdc", "cib-mango-tree"]
+    },
+    {
+      "id": "install-python-version",
+      "question": "What Python version is required to install CIB Mango Tree?",
+      "ground_truth": "Python 3.12 or newer is required (documentation specifies Python >= 3.12 and verifies 3.12.x).",
+      "expected_source_urls": [
+        "https://civictechdc.github.io/cib-mango-tree/guides/get-started/installation/"
+      ],
+      "expected_aspects": ["Python", "3.12"]
+    },
+    {
+      "id": "install-required-software",
+      "question": "What software must be installed before setting up the CIB Mango Tree development environment?",
+      "ground_truth": "You need Python (>= 3.12), Git, and a command-line terminal.",
+      "expected_source_urls": [
+        "https://civictechdc.github.io/cib-mango-tree/guides/get-started/installation/"
+      ],
+      "expected_aspects": ["Python", "Git", "terminal"]
+    },
+    {
+      "id": "install-clone",
+      "question": "How do you clone the CIB Mango Tree repository?",
+      "ground_truth": "Run git clone https://github.com/civictechdc/cib-mango-tree.git and cd into the cib-mango-tree folder.",
+      "expected_source_urls": [
+        "https://civictechdc.github.io/cib-mango-tree/guides/get-started/installation/"
+      ],
+      "expected_aspects": ["git clone", "civictechdc/cib-mango-tree"]
+    },
+    {
+      "id": "install-verify",
+      "question": "How do you verify a successful CIB Mango Tree installation?",
+      "ground_truth": "Run python -m cibmangotree --noop; a successful install prints that the no-op flag was detected and exits successfully.",
+      "expected_source_urls": [
+        "https://civictechdc.github.io/cib-mango-tree/guides/get-started/installation/"
+      ],
+      "expected_aspects": ["cibmangotree", "--noop"]
+    },
+    {
+      "id": "install-start-app",
+      "question": "How do you start the CIB Mango Tree application after setup?",
+      "ground_truth": "From the project root with the virtual environment activated, run python -m cibmangotree.",
+      "expected_source_urls": [
+        "https://civictechdc.github.io/cib-mango-tree/guides/get-started/installation/"
+      ],
+      "expected_aspects": ["python -m cibmangotree"]
+    },
+    {
+      "id": "install-pre-commit",
+      "question": "What do pre-commit hooks do in the CIB Mango Tree repo?",
+      "ground_truth": "Pre-commit hooks automatically format code with Black and isort before each commit.",
+      "expected_source_urls": [
+        "https://civictechdc.github.io/cib-mango-tree/guides/get-started/installation/"
+      ],
+      "expected_aspects": ["pre-commit", "Black", "isort"]
+    },
+    {
+      "id": "install-uv",
+      "question": "What package manager does the installation guide recommend for faster dependency setup?",
+      "ground_truth": "uv is recommended as a fast Python package manager; use uv venv and uv sync --group dev to install dependencies.",
+      "expected_source_urls": [
+        "https://civictechdc.github.io/cib-mango-tree/guides/get-started/installation/"
+      ],
+      "expected_aspects": ["uv", "uv sync"]
+    },
+    {
+      "id": "install-system-reqs",
+      "question": "What operating systems and memory does CIB Mango Tree support for development?",
+      "ground_truth": "Supported OS includes Windows (PowerShell), macOS, and Linux; documentation recommends 4GB+ RAM and 1GB+ free storage.",
+      "expected_source_urls": [
+        "https://civictechdc.github.io/cib-mango-tree/guides/get-started/installation/"
+      ],
+      "expected_aspects": ["macOS", "Linux", "4GB", "RAM"]
+    },
+    {
+      "id": "install-storage",
+      "question": "How is application data stored on macOS for CIB Mango Tree?",
+      "ground_truth": "On macOS the app uses ~/Library/Application Support/MangoTango/ for application data.",
+      "expected_source_urls": [
+        "https://civictechdc.github.io/cib-mango-tree/guides/get-started/installation/"
+      ],
+      "expected_aspects": ["Application Support", "MangoTango"]
+    },
+    {
+      "id": "install-database",
+      "question": "Does CIB Mango Tree require manual database setup on first run?",
+      "ground_truth": "No manual database setup is required; TinyDB is initialized automatically on first run.",
+      "expected_source_urls": [
+        "https://civictechdc.github.io/cib-mango-tree/guides/get-started/installation/"
+      ],
+      "expected_aspects": ["TinyDB", "automatically"]
+    },
+    {
+      "id": "contributor-slack",
+      "question": "How can a new contributor join the CIB Mango Tree community online?",
+      "ground_truth": "Join Civic Tech DC Slack (civictechdc.org/slack) and look for cib-mango-tree channels; virtual participation is also welcome.",
+      "expected_source_urls": [
+        "https://civictechdc.github.io/cib-mango-tree/guides/contributing/new_contributor_guide/"
+      ],
+      "expected_aspects": ["Slack", "cib-mango-tree"]
+    },
+    {
+      "id": "contributor-research-handoff",
+      "question": "What is the hand-off deliverable when researching a new CIB Mango Tree test?",
+      "ground_truth": "Fill out the test outline template on Google Drive to propose a new test, recording references and a starting point for implementation.",
+      "expected_source_urls": [
+        "https://civictechdc.github.io/cib-mango-tree/guides/contributing/new_contributor_guide/"
+      ],
+      "expected_aspects": ["test outline", "template"]
+    },
+    {
+      "id": "contributor-implement-handoff",
+      "question": "What is the hand-off when implementing a new analyzer in CIB Mango Tree?",
+      "ground_truth": "Open a pull request to the main civictechdc/cib-mango-tree repository that adds the new analyzer code.",
+      "expected_source_urls": [
+        "https://civictechdc.github.io/cib-mango-tree/guides/contributing/new_contributor_guide/"
+      ],
+      "expected_aspects": ["pull request", "analyzer"]
+    },
+    {
+      "id": "contributor-prototype-handoff",
+      "question": "What should you deliver after prototyping a new CIB Mango Tree test?",
+      "ground_truth": "Open a GitHub issue on the main repository describing the prototyped test as a feature request, noting what worked and what did not.",
+      "expected_source_urls": [
+        "https://civictechdc.github.io/cib-mango-tree/guides/contributing/new_contributor_guide/"
+      ],
+      "expected_aspects": ["GitHub issue", "prototype"]
+    },
+    {
+      "id": "ai-assisted-docs",
+      "question": "Where should Cursor users look for AI-assisted development instructions in CIB Mango Tree?",
+      "ground_truth": "Cursor users should read .cursorrules and the .ai-context/ directory; documentation notes AI rules may be outdated and under review.",
+      "expected_source_urls": [
+        "https://civictechdc.github.io/cib-mango-tree/guides/contributing/ai_assisted_dev/"
+      ],
+      "expected_aspects": [".cursorrules", ".ai-context"]
+    },
+    {
+      "id": "install-pyarrow-troubleshooting",
+      "question": "What Python version fixes common pyarrow dependency install failures?",
+      "ground_truth": "Use Python 3.12; pyarrow install failures are often due to version mismatches with other Python versions.",
+      "expected_source_urls": [
+        "https://civictechdc.github.io/cib-mango-tree/guides/get-started/installation/"
+      ],
+      "expected_aspects": ["pyarrow", "3.12"]
+    },
+    {
+      "id": "edge-no-match",
+      "question": "What is the capital of Atlantis in the year 3026?",
+      "ground_truth": "The corpus does not contain information about Atlantis; the system should indicate insufficient or no matching context.",
+      "expect_no_match": true,
+      "expected_aspects": ["no matching", "insufficient"]
+    }
+  ]
+}
