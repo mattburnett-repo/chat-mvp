@@ -11,6 +11,7 @@ from typing import Any
 
 from backend.prompts import BGE_QUERY_PREFIX
 from huggingface_hub import InferenceClient
+from langsmith import traceable
 
 
 def embedding_model_name() -> str:
@@ -62,9 +63,11 @@ def _embed_text(text: str) -> list[float]:
     return _mean_pool(raw)
 
 
+@traceable(name="embed_document", run_type="embedding")
 def embed_document(text: str) -> list[float]:
     return _embed_text(text)
 
 
+@traceable(name="embed_query", run_type="embedding")
 def embed_query(text: str) -> list[float]:
     return _embed_text(f"{BGE_QUERY_PREFIX}{text}")

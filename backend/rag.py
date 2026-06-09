@@ -10,6 +10,7 @@ from corpus.embeddings import embed_query
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_huggingface import ChatHuggingFace, HuggingFaceEndpoint
+from langsmith import traceable
 
 from backend.prompts import PRIMARY_SYSTEM_PROMPT
 from backend.retrieve import search_by_embedding
@@ -88,6 +89,7 @@ def generate_answer(question: str, context: str) -> str:
     return _get_chain().invoke({"context": context, "question": question})
 
 
+@traceable(name="rag_query", run_type="chain")
 def run_rag_query(
     question: str,
     top_k: int | None = None,
