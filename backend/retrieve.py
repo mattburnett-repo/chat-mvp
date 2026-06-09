@@ -2,6 +2,7 @@
 
 from corpus.db import get_connection
 from corpus.sql_queries import SELECT_DOCUMENTS_BY_VECTOR_SIMILARITY
+from langsmith import traceable
 
 
 def _to_pgvector_literal(vec: list[float]) -> str:
@@ -9,6 +10,7 @@ def _to_pgvector_literal(vec: list[float]) -> str:
     return "[" + ",".join(str(float(x)) for x in vec) + "]"
 
 
+@traceable(name="vector_search", run_type="retriever")
 def search_by_embedding(
     embedding: list[float], top_k: int
 ) -> list[tuple[str, int, str]]:

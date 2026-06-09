@@ -12,6 +12,7 @@ from langchain_core.output_parsers import StrOutputParser
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain_core.runnables.history import RunnableWithMessageHistory
 from langchain_huggingface import ChatHuggingFace, HuggingFaceEndpoint
+from langsmith import traceable
 from pydantic import BaseModel, Field
 
 from backend.prompts import PRIMARY_SYSTEM_PROMPT
@@ -101,16 +102,8 @@ def _effective_session_id(raw: str | None) -> str:
     return str(uuid.uuid4())
 
 
-@app.post("/query", response_model=QueryResponse)
-def query(req: QueryRequest):
-    if not os.environ.get("PRIMARY_LLM_KEY"):
-        raise HTTPException(status_code=500, detail="Missing PRIMARY_LLM_KEY")
-    session_id = _effective_session_id(req.session_id)
-    try:
-        _ensure_conversation_row(session_id)
-    except Exception as e:
-        raise HTTPException(status_code=502, detail=f"Database error: {e}") from e
-
+@traceable(name="rag_query", run_type="chain")
+def _run_query_pipeline(req: QueryRequest, session_id: str) -> QueryResponse:
     try:
         q_vec = embed_query(req.query)
     except Exception as e:
@@ -156,3 +149,16 @@ def query(req: QueryRequest):
             raise HTTPException(status_code=502, detail=f"LLM failed: {e}") from e
 
     raise HTTPException(status_code=502, detail="LLM failed")
+
+
+@app.post("/query", response_model=QueryResponse)
+def query(req: QueryRequest):
+    if not os.environ.get("PRIMARY_LLM_KEY"):
+        raise HTTPException(status_code=500, detail="Missing PRIMARY_LLM_KEY")
+    session_id = _effective_session_id(req.session_id)
+    try:
+        _ensure_conversation_row(session_id)
+    except Exception as e:
+        raise HTTPException(status_code=502, detail=f"Database error: {e}") from e
+
+    return _run_query_pipeline(req, session_id)
